@@ -79,9 +79,9 @@ jobs:
         uses: sigstore/cosign-installer@v3
         if: steps.compare.outputs.needs_push == 'true'
         with:
-          cosign-release: mai
+          cosign-release: main
 
-      - name: Sign image and attest SBOMs
+      - name: Sign image
         run: |
           cosign sign --yes --recursive ghcr.io/mshekow/${{ matrix.image_with_tag }}
         shell: bash -euo pipefail {0}
