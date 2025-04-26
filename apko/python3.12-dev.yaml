@@ -1,0 +1,35 @@
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - python-3.12-dev
+    - py3.12-pip
+    - build-base
+    - uv
+    - apk-tools
+    - bash
+    - busybox
+    - git
+    - wget
+
+entrypoint:
+  command: /usr/bin/python
+
+accounts:
+  groups:
+    - gid: 65532
+      groupname: nonroot
+      members: []
+  users:
+    - gid: 65532
+      homedir: "/home/nonroot"
+      shell: ''
+      uid: 65532
+      username: nonroot
+  run-as: '65532'
+
+archs:
+  - amd64
+  - arm64

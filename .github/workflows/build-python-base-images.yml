@@ -1,0 +1,86 @@
+# This workflow builds Chainguard Python base images using the apko CLI. The build is repeated daily.
+
+name: Build Chainguard Python Base Images
+
+on:
+#  push:
+#    branches: [ main ]
+  #  pull_request:
+  #    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'  # Run every day at 9 AM UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - apko_recipe: "apko/python3.12.yaml"
+            image_with_tag: "python-chainguard:3.12"
+          - apko_recipe: "apko/python3.12-dev.yaml"
+            image_with_tag: "python-chainguard:3.12-dev"
+    permissions:
+      contents: read  # for "checkout" action
+      packages: write  # to push Container image
+      id-token: write  # for Cosign keyless signing
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Setup apko
+        run: go install chainguard.dev/apko@latest
+
+      - name: Start local registry
+        run: docker run -d -p 5000:5000 registry:3
+
+      - name: Build image and push to local registry
+        run: apko publish ${{ matrix.apko_recipe }} localhost:5000/${{ matrix.image_with_tag }}
+
+      - name: Compare builds
+        id: compare
+        run: |
+          set +e
+          
+          digest_ghcr=$(docker manifest inspect ghcr.io/mshekow/${{ matrix.image_with_tag }} --verbose 2>/dev/null | jq -r '.[0].Descriptor.digest')
+          digest_local=$(docker manifest inspect localhost:5000/${{ matrix.image_with_tag }} --insecure --verbose 2>/dev/null | jq -r '.[0].Descriptor.digest')
+          
+          echo "ghcr: $digest_ghcr"
+          echo "local: $digest_local"
+          
+          if [ "$digest_ghcr" = "$digest_local" ]; then
+            echo "The pushed image is already up-to-date."
+            echo "needs_push=false" >> $GITHUB_OUTPUT
+          else
+            echo "The pushed image needs to be updated."
+            echo "needs_push=true" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Login to GitHub Container Registry
+        if: steps.compare.outputs.needs_push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+        if: steps.compare.outputs.needs_push == 'true'
+
+      - name: Push updated image
+        run: apko publish ${{ matrix.apko_recipe }} ghcr.io/mshekow/${{ matrix.image_with_tag }}
+        if: steps.compare.outputs.needs_push == 'true'
+
+      - name: Sign image
+        run: |
+          cosign sign --yes --recursive ghcr.io/mshekow/${{ matrix.image_with_tag }}
+        shell: bash -euo pipefail {0}
+        if: steps.compare.outputs.needs_push == 'true'
