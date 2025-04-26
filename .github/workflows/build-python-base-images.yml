@@ -71,15 +71,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push updated image
-        run: apko publish ${{ matrix.apko_recipe }} ghcr.io/mshekow/${{ matrix.image_with_tag }}
-        if: steps.compare.outputs.needs_push == 'true'
-
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
         if: steps.compare.outputs.needs_push == 'true'
-        with:
-          cosign-release: main
+
+      - name: Push updated image
+        run: apko publish ${{ matrix.apko_recipe }} ghcr.io/mshekow/${{ matrix.image_with_tag }}
+        if: steps.compare.outputs.needs_push == 'true'
 
       - name: Sign image
         run: |
