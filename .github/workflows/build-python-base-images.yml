@@ -18,9 +18,9 @@ jobs:
       matrix:
         include:
           - apko_recipe: "apko/python3.12.yaml"
-            image_with_tag: "python:3.12-chainguard"
+            image_with_tag: "python-chainguard:3.12"
           - apko_recipe: "apko/python3.12-dev.yaml"
-            image_with_tag: "python:3.12-chainguard-dev"
+            image_with_tag: "python-chainguard:3.12-dev"
     permissions:
       contents: read  # for "checkout" action
       packages: write  # to push Container image
