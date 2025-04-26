@@ -4,8 +4,8 @@ contents:
   keyring:
     - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
   packages:
-    - python-3.13-dev
-    - py3.13-pip
+    - python-3.12-dev
+    - py3.12-pip
     - build-base
     - uv
     - apk-tools
