@@ -1,2 +1,2 @@
-FROM gcr.io/distroless/nodejs22-debian12:latest@sha256:176a1a417bd00cf01952c2854a3ff0b11bfb118ff91a7ab0b7307899df239d4e AS base
+FROM gcr.io/distroless/nodejs22-debian12:latest@sha256:5bbfaef4976723a9574efdeea941ca4f2a30b271a8b9ad6a1036dbaae68f855d AS base
 RUN echo hello
