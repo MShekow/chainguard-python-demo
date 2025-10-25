@@ -1,6 +1,6 @@
 ARG VIRTUAL_ENV=/app/.venv
 ARG BASE_IMAGE_DEV=ghcr.io/mshekow/python-chainguard:3.12-dev@sha256:68526c1046bbd336e0e1c74ca2d348ce96f87ef9716a9ae4f21fc54abc4a80a0
-ARG BASE_IMAGE=ghcr.io/mshekow/python-chainguard:3.12@sha256:a5ca68c22d0d0373bb517ca2da54a11c36309ab83996a42372d6407d7140d941
+ARG BASE_IMAGE=ghcr.io/mshekow/python-chainguard:3.12@sha256:60bda3a012e6f5f5f22bd7065069bb7be7f4e39fb0665ab80290f851211abba0
 
 FROM alpine:latest AS image-verifier
 RUN apk add -u cosign
