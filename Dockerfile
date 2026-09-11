@@ -1,5 +1,5 @@
 ARG VIRTUAL_ENV=/app/.venv
-ARG BASE_IMAGE_DEV=ghcr.io/mshekow/python-chainguard:3.12-dev@sha256:30623124a0774ae4fcc754bfed42d61870316d1dfae05fa61c57fafbb3ae399d
+ARG BASE_IMAGE_DEV=ghcr.io/mshekow/python-chainguard:3.12-dev@sha256:1d5493d85b8b14660b7f205a513622ca2bb6bec195251e98c4b9246f4fe41ddf
 ARG BASE_IMAGE=ghcr.io/mshekow/python-chainguard:3.12@sha256:1e9d26c9c084b6fe12020ccc644efaff560d52156ec29c3ca5a6998994b5837a
 
 FROM alpine:latest AS image-verifier
